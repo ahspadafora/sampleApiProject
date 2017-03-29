@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class BookListViewController: UIViewController {
     
@@ -15,9 +16,6 @@ class BookListViewController: UIViewController {
     @IBOutlet weak var bookListTableView: UITableView!
     @IBOutlet weak var bookSearchBar: UISearchBar!
     
-    override func viewDidAppear(_ animated: Bool) {
-        bookListTableView.reloadData()
-    }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let cell = sender as? BookTableViewCell,
@@ -72,25 +70,8 @@ extension BookListViewController: UITableViewDataSource, UITableViewDelegate {
         cell.titleLabel.text = currentBook.title
         cell.authorLabel.text = currentBook.authors[0]
         
-        DispatchQueue.main.async {
-            if let imageUrl = URL(string: (currentBook.smallThumbnail)!) {
-                let currentSession = URLSession(configuration: .default)
-                currentSession.dataTask(with: imageUrl, completionHandler: { (data, response, error) in
-                    if error != nil {
-                        print(error!)
-                    }
-                    if let validData = data {
-                        if let cellToUpdate: BookTableViewCell = self.bookListTableView?.cellForRow(at: indexPath) as? BookTableViewCell,
-                            cellToUpdate.bookImageView.image == nil {
-                            cellToUpdate.bookImageView.image = UIImage(data: validData) // will work fine even if image is nil
-                            cellToUpdate.setNeedsLayout() // need to reload the view, which won't happen otherwise since this is in an async call
-                        }
-                    }
-                })
-                    .resume()
-            }
-            
-        }
+        cell.bookImageView.sd_setImage(with: URL(string: currentBook.smallThumbnail!))
+        
         return cell
     }
     

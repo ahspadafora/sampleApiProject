@@ -33,19 +33,7 @@ class ManagePageViewController: UIPageViewController {
             page.bookTitleLabel.text = self.books[index].title
             page.authorLabel.text = self.books[index].authors[0]
             page.summaryLabel.text = self.books[index].description
-            
-            if let validUrl = URL(string: self.books[index].smallThumbnail!) {
-                let currentSession = URLSession(configuration: .default)
-                currentSession.dataTask(with: validUrl, completionHandler: { (data, response, error) in
-                    if error != nil {
-                        print(error!)
-                    }
-                    if let validData = data {
-                        page.bookImage.image = UIImage(data: validData)
-                    }
-                })
-                    .resume()
-            }
+            page.bookImage.sd_setImage(with: URL(string: self.books[index].smallThumbnail!))
             
             return page
         }
